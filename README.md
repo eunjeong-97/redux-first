@@ -20,3 +20,4 @@
 - vacode prettier 기본설정 정리
 - 기본적인 백엔드 지식도 배워둬야겠다 (MySQL, php 등등)
 - 위코드 기본세션, 생활코딩 WEBn시리즈
+- `public/manifest.json,robots.txt` 역할

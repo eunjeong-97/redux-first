@@ -22,8 +22,22 @@
 ├──node_modules : npm install 하면 자동생성
 ├──public
 |  ├──index.html
-|  ├──
+|  ├──manifest.json (보류)
+|  ├──robots.txt (보류)
+|
 ├──src
+|  ├──actions
+|  |  ├──index.js :
+|  |
+|  ├──container
+|  |  ├──App.js
+|  |  ├──CounterContainer.js
+|  |
+|  ├──reducers
+|     ├──ActionTypes.js : string타입의 action type값을 상수로 저장함
+|     ├──index.js :
+|
+|
 ├──index.js
 ├──.gitignore
 ├──package-lock.json
@@ -52,7 +66,7 @@
 - style은 Presentational 컴포넌트에서만 정의되어야 하기 때문에 스타일을 가지지 않는다.
 - 상태를 가지고 있을 때가 많으며, Redux에 직접적으로 접근할 수 있다.
 
-> 사용예시
+#### Container 컴포넌트 사용예시
 
 - 페이지
 - 리스트
@@ -197,7 +211,7 @@ ReactDOM.render(<App />, document.getElementbyId("root"));
 `<Provider>`는 `react-redux` 라이브러리에 내장되어있는, 리액트 앱에서 store를 손쉽게 연동할 수 있도록 도와주는 컴포넌트이다.
 `<Provider>` 컴포넌트로 연동할 컴포넌트를 감싼 다음, `<Provider>` 컴포넌트의 props로 store 값을 설정하면 된다.
 
-path: `src/index.js`
+- path: `src/index.js`
 
 ```js
 import React from "react";
