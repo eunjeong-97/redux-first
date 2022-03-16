@@ -3,6 +3,7 @@
 > 목차
 
 - [Redux](#redux)
+  - [Redux 개념](#redux-개념)
   - [Redux를 사용하는 프로젝트 구조](#redux를-사용하는-프로젝트-구조)
     - [1. Presentational 컴포넌트](#1-presentational-컴포넌트)
     - [2. Container 컴포넌트](#2-container-컴포넌트)
@@ -16,6 +17,75 @@
   - [3. Store 만들기](#3-store-만들기)
   - [4. Provider 컴포넌트](#4-provider-컴포넌트)
 
+## Redux 개념
+
+리액트 프로젝트에는 Global State 사용하는 App컴포넌트와, Local State 사용하는 하위 컴포넌트들로 구성되어있다. 이렇게 전역 state와 지역 state를 공유하기 위해 redux를 사용하는데, 서로 간에 공유해야 하는 shared state를 store라고 생각하면 좋다. 이러한 특성을 가지고 있기 때문에 redux를 `state container` 라고 부르기도 한다.
+
+중앙 store의 state에 접근하기 위해서 dispatch열차에 action을 태워야 한다.
+이러한 dispatch는 action을 reducer에게 전달해주면 → reducer는 actionType과 state을 가지고 state의 값을 변경하는 동작을 해준다. 이러한 store는 React Component의 최상위에 감싸져야 한다.
+
+1. [Action](#1-Action)
+
+- 중앙 저장소에 저장된 state에 **무슨 동작**을 할 것인지 적어놓는 **객체**이다.
+- 이러한 객체는 type이 필수적으로 필요하다.
+- action types를 [모듈로 저장](#step01-actiontypes)해서 사용하면 좋다
+
+2. [Action Creator](#step02-action-creators-액션생성자)
+
+- dispatch라는 열차에 action을 태워서 보내야 되는데, 그때 dispatch에 inline으로 action을 넣는것이 불편하기 때문에 사용한다.
+- action 객체를 return 해주는 함수이다. (state을 입력하면 action으로 만들어준다.)
+
+3. Dispatcher
+
+- 리덕스 스토어 안의 상태는 action이 dispatch됨에 따라 업데이트된다.
+
+- ~~action creator로 return해준~~ action을 parameter로 받아서 store의 reducer에게 넘겨준다.
+- 일종의 열차라고 이해하자.
+
+- store의 값을 변화하기 위해서는 action이 필요하다.
+- 그러한 action은 action creator가 만들어준다.
+- action creator를 담은 dispatch열차가 → store의 reducer에게 action을 전달해주면 → reducer가 action의 type을 보고 그에 맞는 행동을 해준다.
+
+```js
+// addTodo를 담고 reducer로 향하는 dispatch열차
+dispatch(addTodo(text));
+```
+
+4. [Reducer](#2-reducer)
+
+- store의 state를 변경해주는 function이다. (변경된 state를 반환한다.)
+- reducer의 parameter은 state, action 두 개를 가진다.
+- dispatch열차를 타고 온 action의 type을 확인해서 그에 맞는 동작을 해준다.
+
+> reducer의 parameter: state, action
+
+- store : store의 state를 변경시켜야 한다.
+- action : dispatch를 타고 온 action을 받아서 → action의 type을 가지고 swtich case문으로 조건을 걸어준다.
+
+> reducer function js파일 구성
+
+- 초기값 설정
+- switch case문
+
+> 여러 개의 reducer 를 사용한다면 combineReduce메서드 활용
+
+```js
+// reducer/index.js
+import { combineReducers } from "redux";
+import user from "./user";
+import todos from "./todos";
+
+export default combineReducer({
+  user,
+  todos,
+});
+```
+
+5. [Store](#3-store-만들기)
+
+- 모든 컴포넌트에서 사용할 수 있는 `Global State`를 저장해놓는 **저장소**이다.
+- 이러한 state는 엄격하게 관리해야 하기 때문에 `dispatch 라는 함수`를 통해서만 state에 접근이 가능하다.
+
 ## 프로젝트 구조
 
 ```bash
@@ -27,16 +97,16 @@
 |
 ├──src
 |  ├──actions
-|  |  ├──index.js :
+|  |  ├──ActionTypes.js : string타입의 action type값을 상수로 저장함
+|  |  ├─authentication.js
 |  |
-|  ├──container
+|  ├──container (선택사항)
 |  |  ├──App.js
-|  |  ├──CounterContainer.js
+|  |  ├──CounterContainer.js 등등
 |  |
 |  ├──reducers
-|     ├──ActionTypes.js : string타입의 action type값을 상수로 저장함
-|     ├──index.js :
-|
+|     ├──index.js : 여러 reducer 파일들을 import해서 combineReducer()메서드로 내보냄
+|     ├──다른 reducer.js 등등
 |
 ├──index.js
 ├──.gitignore
@@ -181,6 +251,15 @@ export default function counter(state = initialState, action) {
     default:
       return state;
   }
+}
+```
+
+이처럼 [ES6 default arguments 문법](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/Default_parameters)을 사용하면 reducer에 아래와 같은 조건을 추가하지 않아도 될 것 같다
+
+```js
+export default function counter(state, action) {
+  if (typeof state === "undefined") state = initialState;
+  // 생략
 }
 ```
 

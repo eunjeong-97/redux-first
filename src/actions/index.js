@@ -1,5 +1,7 @@
 import * as types from './ActionTypes';
 
+// action creators
+
 export const increment = () => ({
     type: types.INCREMENT
 });

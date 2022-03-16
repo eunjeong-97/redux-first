@@ -51,3 +51,32 @@ MyComponent.propTypes = {
 
 export default MyComponent;
 ```
+
+## `react-addons-update` 라이브러리
+
+- [공식문서](https://ko.reactjs.org/docs/update.html)
+- `$` 명령어 사용
+
+```js
+import update from "react-addons-update";
+
+// 활용예시
+const newData = update(myData, {
+  x: { y: { z: { $set: 7 } } },
+  a: { b: { $push: [9] } },
+});
+
+export default function authentication(state, action) {
+  // state이 undefined라면, state는 초기값
+  if (typeof state === "undefined") state = initialState;
+  switch (action.type) {
+    // action.type이 types.AUTH_LOGIN라면 매개변수 state의 login의 status값을 WAITING으로 교체한다.
+    case types.AUTH_LOGIN:
+      return update(state, {
+        login: {
+          status: { $set: "WAITING" },
+        },
+      });
+  }
+}
+```

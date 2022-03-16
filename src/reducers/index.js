@@ -5,6 +5,8 @@ const initialState = {
     number: 0
 };
 
+// reducer
+
 export default function counter(state = initialState, action) {
     switch (action.types) {
         case types.INCREMENT:
