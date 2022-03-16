@@ -33,16 +33,15 @@
 2. [Action Creator](#step02-action-creators-액션생성자)
 
 - dispatch라는 열차에 action을 태워서 보내야 되는데, 그때 dispatch에 inline으로 action을 넣는것이 불편하기 때문에 사용한다.
-- action 객체를 return 해주는 함수이다. (state을 입력하면 action으로 만들어준다.)
+- action 객체를 return 해주는 함수이다. (내용을 입력하면 action으로 만들어준다.)
 
 3. Dispatcher
 
 - 리덕스 스토어 안의 상태는 action이 dispatch됨에 따라 업데이트된다.
-
 - ~~action creator로 return해준~~ action을 parameter로 받아서 store의 reducer에게 넘겨준다.
 - 일종의 열차라고 이해하자.
 
-- store의 값을 변화하기 위해서는 action이 필요하다.
+- store의 값(=state)을 변화하기 위해서는 action이 필요하다.
 - 그러한 action은 action creator가 만들어준다.
 - action creator를 담은 dispatch열차가 → store의 reducer에게 action을 전달해주면 → reducer가 action의 type을 보고 그에 맞는 행동을 해준다.
 
