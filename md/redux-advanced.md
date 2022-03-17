@@ -3,7 +3,13 @@
 - [Redux Module](#redux-module)
 - [useSelector 최적화](#useselector-최적화)
 - [redux-thunk](#redux-thunk)
+  - [1. redux-thunk 사용예시 1: `delay`](#1-redux-thunk-사용예시-1-delay)
+  - [2. redux-thunk 사용예시 2: `조건에 따라` action을 dispatch()하거나 무시하도록](#2-redux-thunk-사용예시-2-조건에-따라-action을-dispatch하거나-무시하도록)
+  - [redux-thunk 예시](#redux-thunk-예시)
   - [Redux Middleware](#redux-middleware)
+- [redux-actions](#redux-actions)
+  - [1. createAction()를 통한 액션생성 자동화](#1-createaction를-통한-액션생성-자동화)
+  - [2. swtich문 대신 handleActions() 사용하기](#2-swtich문-대신-handleactions-사용하기)
 
 ## Redux Module
 
@@ -57,7 +63,7 @@ function foo() {
 }
 ```
 
-보통 리덕스에서는 `dispatch(actionObject)`를 하고, 일반적인 Action Creator를 ~~저장하려는 state를~~ parameter를 가지고 action객체를 생성하는 작업만 한다.
+보통 리덕스에서는 `dispatch(actionObject)`를 하고, 일반적인 Action Creator는 저장하려는 state를 parameter로 가지고 action객체를 생성하는 작업만 한다.
 
 ```js
 const actionCreator = (payload) => ({ action: "ACTION", payload });
@@ -68,9 +74,9 @@ const actionCreator = (payload) => ({ action: "ACTION", payload });
 [mdn errow function](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/Arrow_functions)을 보면, 화살표 함수의 유일한 문장이 `return문`일 때, `return`과 `중괄호 {}`을 생략할 수 있다. 따라서`const actionCreator = () => ({})` 화살표함수는 object타입의 return값을 가진다.
 
 ```js
-cost actionCreator = payload => {
-    return {action: 'ACTION', payload}
-}
+const actionCreator = (payload) => {
+  return { action: "ACTION", payload };
+};
 ```
 
 [Moderan JavaScript Arrow Function](https://poiemaweb.com/es6-arrow-function)에서 아래와 같은 화살표 함수 문법을 보니 더 이해가 잘 되었다.
@@ -98,11 +104,10 @@ x => x * x             // 함수 몸체가 한줄의 구문이라면 중괄호�
 
 > #### 다시 thunk로 돌아와서...
 
-만약 특정한 action이 몇초뒤에 실행하거나, 현재 상태에 따라 아예 액션을 못하게 막는 동작은 일반적인 actionCreator으로는 할 수 없다.
-이러한 기능을 수행하기 위해 `redux-thunk`을 사용한다.
-또한 redux-thunk middleware에서 전달받은 action이 함수형태일 때, 그 함수에 `dispatch()`와 `getState()`를 넣어서 실행하기 때문에 내부 함수에서 `dispatch()`와 `getState()`을 사용할 수 있는 것이다.
+만약 특정한 action이 몇초뒤에 실행되거나, 현재 상태에 따라 아예 액션을 못하게 막는 동작은 일반적인 actionCreator으로는 할 수 없어서 이러한 기능을 수행하기 위해 `redux-thunk`을 사용한다.
+또한 redux-thunk middleware에서 전달받은 action이 `함수형태`일 때, 그 함수에 `dispatch()`와 `getState()`를 넣어서 실행하기 때문에 내부 함수에서 `dispatch()`와 `getState()`을 사용할 수 있는 것이다.
 
-1. redux-thunk 사용예시 1: `delay`
+### 1. redux-thunk 사용예시 1: `delay`
 
 ```js
 // actionType 상수로 지정
@@ -133,7 +138,7 @@ function incrementAsync() {
 store.dispatch(incrementAsync());
 ```
 
-2. redux-thunk 사용예시 2: `조건에 따라` action을 dispatch()하거나 무시하도록
+### 2. redux-thunk 사용예시 2: `조건에 따라` action을 dispatch()하거나 무시하도록
 
 - 이번 경우처럼 리턴되는 함수에서 `dispatch, action`을 파라미터로 받게 되면 store의 상태(=state)에도 접근이 가능하다.
 - 따라서 현재 store의 상태(=state)의 값에 따라 action이 dispatch될지 무시될지 결정된다.
@@ -173,6 +178,14 @@ import thunk from "redux-thunk";
 const store = createStore(rootReducer, applyMiddleware(thunk));
 ```
 -->
+
+### redux-thunk 예시
+
+1. actionType 상수로 선언 및 내보내기 `variable`
+2. 액션생성자 만들기 `function`
+3. dispatch를 비동기처리하는 함수 만들기 `dispatcher`
+
+- 경로: `src/action/counter.js`
 
 ### Redux Middleware
 
@@ -216,3 +229,55 @@ function middleware(store) {
 
 위 그림과 같은 구조로 작동하기 때문에 redux store는 여러 개의 middleware를 등록할 수 있다.
 그리고 middleware에서 `next(action)`을 호출하게 되면 다음 middleware로 action을 전달하고, `store.dispatch()`를 호출하게 되면 다른 action을 추가적으로 발생한다.
+
+## redux-actions
+
+`redux-actions` 패키지는 리덕스의 action들을 관리하기 위한 유용한 `createAction()`과 `handleActions()` 함수가 있다.
+
+### 1. createAction()를 통한 액션생성 자동화
+
+액션생성자는 parameter로 전달받은 값을 객체에 넣는 순수 함수이기 때문에 자동화할 수 있을 것 같다.
+
+```js
+// 기본적인 액션생성자
+export const increment = (index) => ({
+  type: types.INCREMENT,
+  index,
+});
+
+export const decrement = (index) => ({
+  type: types.DECREMENT,
+  index,
+});
+
+// createAction을 통한 액션생성 자동화
+export const increment = createAction(types.INCREMENT);
+export const decrement = createAction(types.DECREMENT);
+```
+
+하지만 이런식으로 parameter가 index가 될지 뭐가 될지 모르기 때문에 `parameter로 전달받은 값`을 `action의 payload값`으로 설정한다. action이 가지고 있을 수 있는 변수를 `payload`로 통일하기 때문에 action을 생성하는 것을 자동화할 수 있다.
+단점은 코드를 봤을 때 해당 actionCreator가 parameter로 필요한 값이 뭔지 모르기 때문에 주석을 달아줘야 한다.
+
+### 2. swtich문 대신 handleActions() 사용하기
+
+reducer에서 actionType에 따라 다른 작업을 하기 위해 보통은 swtich문을 사용하지만, `scope`가 reducer함수로 설정되어있기 때문에 서로 다른 case에서 let, const로 변수를 선언하려고 하면 이름이 중첩될 경우 에러가 발생한다. 각각의 case마다 함수를 정의하면 코드의 가독성이 떨어지기 때문에 `handleActions()` 함수를 사용하면 해결할 수 있다.
+
+```js
+const reducerName = handleActions(object, initialState);
+
+// handleActions() example
+const reducer = handleActions(
+  {
+    INCREMENT: (state, action) => ({
+      counter: state.counter + action.payload,
+    }),
+    DECREMENT: (state, action) => ({
+      counter: state.counter - action.payload,
+    }),
+  },
+  { counter: 0 }
+);
+```
+
+1. 첫번째 parameter: 액션에 따라 실행할 함수를 가지고 있는 객체
+2. 두번째 parameter: 객체형식의 상태의 기본 값(initialState)
