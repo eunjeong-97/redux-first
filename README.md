@@ -1,6 +1,6 @@
 # Redux First
 
-- [참고자료]((/Reference.md))
+- [참고자료](/Reference.md)
 - [실전 리액트 프로그래밍](/PracticeReactProgramming.md)
 
 ## 공부하자!
@@ -12,6 +12,7 @@
 - react-i18next 패키지
 - redux-thunk 미들웨어
 - [TOAST UI](https://ui.toast.com/)
+
 ## 공부한 내용
 
 - [React JS](/md/react.md)
@@ -24,4 +25,3 @@
 - [2022-03-16](/md/daily/220316.md)
 - [2022-03-17](/md/daily/220317.md)
 - [2022-03-18](/md/daily/220318.md)
-
